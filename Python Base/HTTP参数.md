@@ -1,6 +1,158 @@
-# http header 所有参数详解
+## HTTP和HTTPS
 
-## 通用 general
+商业应用
+
+- c/s 即 client server 客户端 服务端（LOL、穿越火线、吃鸡）
+- b/s 即 browser server 浏览器服务端（淘宝、网页）
+- m/s 即 moblie server 移动端服务端（app、王者荣耀）
+
+以上结构，本质上是客户端和服务端数据的交互。
+
+客户端：安装在本地电脑，为用户提供图形演示效果，提供本地数据输出输入。
+
+服务端：提供数据服务的公司机房的某台服务器上边的服务端程序。
+
+应用层基于TCP/IP协议和各种应用层传输协议FTP。
+
+### HTTP
+
+超文本传输协议
+
+基于TCP / IP通信协议来传递数据（HTML、图片、查询结果等）。
+
+#### HTTP请求流程
+
+Client   ----请求--->   server
+
+​             <----相应---               端口80
+
+url：全球统一资源定位符。
+
+`http://www.aspxfans.com:8080/new/index.asp?boradID=5&ID=24618&page=1#name`
+
+发送HTTP请求==打电话
+
+##### Q1:怎么发送请求的？
+
+```python
+# 暂时只听，不要跟着操作
+import socket
+# 创建socket服务端
+server = socket.socket()
+# 绑定IP和端口
+server.bind(('0.0.0.0',8080))
+# 监听
+server.listen(5)
+# 接收
+conn,addr = server.accept()
+# 接收数据
+data = conn.recv(1024)
+print(data)
+# 使用浏览器访问127.0.0.1:8080  程序端接收HTTP请求
+------------------------
+b'GET / HTTP/1.1\r\nHost: 127.0.0.1:8080\r\nConnection:...
+```
+
+##### Q2:请求头？
+
+```
+Host：请求头。一定要带
+User-Agant：访问的设备。告知访问设备
+Accept：可接受的信息
+Cookie：会话技术
+Referer：出处。我从那儿来
+
+```
+
+#### 请求正文
+
+```python
+# 创建一个socket服务端
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ # socket.socket(socket_family, socket_type, protocol=0)
+    # socket_family 可以是 AF_UNIX(基于文件类型的套接字家族) 或 AF_INET(基于网络类型的套接字家族)。
+    # socket_type 可以是 SOCK_STREAM 或 SOCK_DGRAM。
+    # protocol 一般不填,默认值为 0。
+# 绑定ip和端口
+server.bind(('0.0.0.0', 8080))
+# 监听
+server.listen(5)  # 最大连接数量
+# 等待连接
+while True:
+    conn, addr = server.accept()  # 被动接受TCP客户端连接,(阻塞式)等待连接的到来
+    # print(conn, addr)
+    # 接受数据
+    data = conn.recv(1024)
+
+    print(data)
+    # 返回响应字节数据
+    conn.send('HTTP/1.1 200 ok\r\nContent-Type: text/html;charset=utf-8\r\n\r\n <h1 style="color:red">hello world</h1>'.encode())
+    conn.close()
+```
+
+#### HTTP响应
+
+(**send**)
+
+四部分：状态行、消息报头、空行、响应正文
+
+#### HTTP 响应状态码
+
+https://www.cnblogs.com/xflonga/p/9368993.html
+
+200-成功
+
+301-重定向
+
+403-被禁用
+
+404-错误，资源不存在
+
+503-服务器错误
+
+#### HTTP响应报头
+
+**Allow**：服务脂支持哪些请求方法（如GET、POST等）。
+
+**Date**：表示消息发送的时间，时间的描述格式由rfc822定义。例如，Date:Mon，31Dec200104：25：57GMT。Date描述的时间表示世界标准时，换算成本地时间，需要知道用户所在的时区。
+
+**Set-Cookie**：非常重要的header，用于把cookie发送到客户端浏览器，每一个写入cookie都会生成一个Set-Cookie。
+
+**Expires**：指定Response的过期时间，从而不再缓存它，重新从服务器获取，会更新缓存。过期之前使用本地缓存。降低服务器负载，缩短加戴时间。
+
+**Content-Type**： WEB服务器告诉客户端自己响应的对象的类型和字符集。
+
+**Accept-Encoding** 和**Content-Encoding**：采用的正文传输编码格式
+
+#### HTTP协议的特点
+
+- 无连接：无连接的含义是限制每次连接只处理一个请求。服务器处理完客户的请求，并收到客户的应答后，即断开连接。采用这种方式可以节省传输时间。
+- 媒体独立：server和client约定好怎么处理。数据内容没有限制。
+- 无状态：不会记录客户端信息。每次请求都是独立的。早期互联网带宽不大，大部分是静态页面，对现在的环境有大量的HTTP请求，是一种障碍。
+
+### HHTPS
+
+HTTPS（全称：Hyper Text Transfer Protocol over Secure Socket Layer 或 Hypertext Transfer Protocol Secure，超文本传输安全协议），是以安全为目标的HTTP通道，简单讲是HTTP的安全版
+http协议是基于tcp/ip协议的，而https是在http协议的基础之上，再加了一层 SSL/TLS 协议，数据在传输过程中是加密的。
+HTTPS 协议的默认端口是443
+
+`HTTP信息明文传输。安全性差`
+
+使用HTTPS服务端必须安装证书。CA公司购买，传输数据之前先验证，之后建立通道。数据都是密文。
+
+#### SSL/TLS 协议
+
+SSL“安全套接层”（使用非对称和对称加密）协议
+
+TLS“安全传输层”协议（）都属于是加密协议。
+
+OSI（分层网络架构）模型，在应用层和传输层之间使用SSL协议。其最广泛的用途之一是在HTTP协议，从而产生HTTPS加密协议。
+
+
+
+## http header 所有参数详解
+
+### 通用 general
 
 ```
 Request URL: https://www.baidu.com/Request 
@@ -40,7 +192,29 @@ Referrer-Policy: origin;
 
 Legacy Referrernever no-referrerdefault no-referrer-when-downgradealways unsafe-urlorigin-when-crossorigin origin-when-cross-origin
 
-标签属性a 和 link 标签可以通过属性 rel 指定 noreferrer，仅对当前链接有效；a、area、link、iframe 和 img 还可以通过 referrerpolicy 指定仅针对当前链接的设置。请求头Request HeadersAccept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,/;q=0.8Accept-Encoding: gzip, deflate, brAccept-Language: zh-CN,zh;q=0.9Cache-Control: no-cacheConnection: keep-aliveCookie:Host: www.baidu.comPragma: no-cacheReferer:Upgrade-Insecure-Requests: 1User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36accept (客户端能接收的资源类型)accept-encoding gzip通常效率最高， 使用最为广泛
+标签属性a 和 link 标签可以通过属性 rel 指定 noreferrer，仅对当前链接有效；
+
+a、area、link、iframe 和 img 还可以通过 referrerpolicy 指定仅针对当前链接的设置。
+
+请求头
+
+Request HeadersAccept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,/;q=0.8
+
+Accept-Encoding: gzip, deflate, br
+
+Accept-Language: zh-CN,zh;q=0.9
+
+Cache-Control: no-cache
+
+Connection: keep-alive
+
+Cookie:Host: www.baidu.com
+
+Pragma: no-cache
+
+Referer:Upgrade-Insecure-Requests: 1
+
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36accept (客户端能接收的资源类型)accept-encoding gzip通常效率最高， 使用最为广泛
 
 gzip　　表明实体采用GNU zip编码 JPEG这类文件用gzip压缩的不够好。compress 表明实体采用Unix的文件压缩程序deflate　　表明实体是用zlib的格式压缩的identity　　表明没有对实体进行编码。当没有Content-Encoding header时， 就默认为这种情况
 
