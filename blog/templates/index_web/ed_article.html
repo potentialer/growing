@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+{% extends 'index_web/base.html' %}
+{% block title %}文章撰写{% endblock %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'index/edit.css' %}">
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript" src="{% static 'ueditor/ueditor.config.js' %}"></script>
+    <script type="text/javascript" src="{% static 'ueditor/ueditor.all.min.js' %}"></script>
+    <script type="text/javascript" charset="utf-8" src="{% static 'ueditor/lang/zh-cn/zh-cn.js' %}"></script>
+
+{% endblock %}
+
+{% block main %}
+    <div class="editor_box">
+
+        <form action="{% url 'blog:edit_action' %}" method="post" id="edit_form">
+            {% csrf_token %}
+            {% if article %}
+                <div class="blog_title">
+                    <input type="hidden" name="article_id" value="{{ article.id }}">
+                    <label for="" class="edit_title">文章标题：
+                        <input type="text" name="title" id="title" value="{{ article.title }}">
+                    </label>
+                    <br>
+                    <label for="">文章类别：
+                        <select name="category" id="">
+                            <option value="技术">技术</option>
+                            <option value="美文">美文</option>
+                        </select>
+                    </label><br>
+                    <label for="" class="edit_content">文章内容：<br>
+                        <script type="text/javascript">
+                            //实例化编辑器
+                            var ue = UE.getEditor('editor', {
+                                'initialFrameHeight': 300,
+                                'initialFrameWidth': 1000,
+                                'topOffset': 20,
+                                'initialContent': "{{ article.content|safe }}",
+                            });
+                        </script>
+                        <input name="info" type="hidden" id="info">
+                        <script id="editor" name="content" type="text/plain"></script>
+                    </label>
+                    <label for="" class="sub_button" style="cursor:pointer">
+                        <input type="button" name="Submit" value=" 提交 " onClick="uptext()">
+                        {#                    <input type="submit" width="100" value="发表文章" name="sub" onClick="upload()">#}
+                    </label>
+                    {#                <input type="button" width="100px" value="提交" onclick="upload()">#}
+                </div>
+            {% else %}
+                <div class="blog_title">
+                    <input type="hidden" name="article_id" value="99999999">
+                    <label for="" class="edit_title">文章标题：
+                        <input type="text" name="title" id="title">
+                    </label>
+                    <br>
+                    <label for="">文章类别：
+                        <select name="category" id="">
+                            <option value="技术">技术</option>
+                            <option value="美文">美文</option>
+                        </select>
+                    </label><br>
+                    <label for="" class="edit_content">文章内容：<br>
+                        <script type="text/javascript">
+                            //实例化编辑器
+                            var ue = UE.getEditor('editor', {
+                                'initialFrameHeight': 300,
+                                'initialFrameWidth': 1000,
+                                'topOffset': 20,
+                                'initialContent': "分享你的生活",
+                            });
+                        </script>
+                        <script id="editor" name="content" type="text/plain"></script>
+                    </label>
+                    <label for="" class="sub_button" style="cursor:pointer">
+                        <input name="info" type="hidden" id="info">
+                        <input type="button" name="Submit" value=" 提交 " onClick="uptext()">
+                    </label>
+                </div>
+            {% endif %}
+            <script type="text/javascript">
+
+                function uptext() {
+
+                    var psel = document.getElementById("info");
+                    var sub = document.getElementById("edit_form");
+                    if (!UE.getEditor('editor').hasContents()) {
+                        alert('请先填写内容!');
+                    } else {
+                        psel.value = UE.getEditor('editor').getContentTxt();
+                        {#alert(s);#}
+                        sub.submit();
+                    }
+                }
+            </script>
+        </form>
+    </div>
+{% endblock %}

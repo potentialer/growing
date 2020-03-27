@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% extends 'index_web/base.html' %}
+{% block title %}{{ article.title }}{% endblock %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'index/page_css.css' %}">
+{% endblock %}
+{% block main %}
+    <div class="art_main">
+        <div class="title">
+            <span>{{ article.title }}</span>
+        </div>
+        <div class="read">
+            <p class="num">阅读量：({{ article.views }})</p>
+            <p class="cate">关键字：{{ article.category }}</p>
+        </div>
+        <div class="art_content">
+            <iframe width=100% frameborder=0 scrolling=auto
+                    src='data:text/html;charset=UTF-8,{{ article.content }}'></iframe>
+        </div>
+        <a href="{% url 'blog:edit' article.id %}" style="color: #FFFFFF">
+            <div class="edit">
+                修改文章
+            </div>
+        </a>
+    </div>
+{% endblock %}

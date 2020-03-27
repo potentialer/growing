@@ -1,0 +1,163 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: baseline;
+    list-style: none;
+    text-decoration: none;
+}
+
+.header {
+    width: 100%;
+    height: 64px;
+    background: #3a3a3a;
+}
+
+.blog_logo {
+    width: 10%;
+    height: 70px;
+    color: whitesmoke;
+    float: left;
+    margin-left: 10px;
+}
+
+.nav {
+    width: 80%;
+    height: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    line-height: 64px;
+}
+
+.nav .menu {
+    float: left;
+    margin-left: 100px;
+    overflow: hidden;
+}
+
+.menu li {
+    float: left;
+    width: 80px;
+    height: 64px;
+    margin-right: 5px;
+    text-align: center;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.menu li.active {
+    border-bottom: 4px solid #5b86db;
+}
+
+.menu li a {
+    color: #fff;
+}
+#menu1{
+    color: white;
+    cursor: pointer;
+    width: 80px;
+    height: 64px;
+}
+li {
+    list-style: none;
+}
+
+li a {
+    color: black;
+}
+
+.center_text {
+    margin-top: 25px;
+    width: 100%;
+    height: auto;
+}
+
+.title {
+    font: 25px black;
+    text-decoration: None;
+}
+
+.cent {
+    float: left;
+    margin-left: 10%;
+    width: 70%;
+    height: auto;
+}
+
+._all_blog {
+    padding-right: 35px;
+}
+
+._blog {
+    margin: 0 0 1px;
+    padding: 30px 13px 10px 10px;
+    border-bottom: 1px solid darkgrey;
+    width: 100%;
+    height: auto;
+}
+
+.menu > li:hover {
+    background: #999999;
+}
+
+
+.content {
+    padding-top: 15px;
+}
+
+.content > span {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font: 15px black;
+}
+
+.info {
+    padding-top: 8px;
+    width: 100%;
+    height: 20px;
+    text-align: right;
+    font: 14px grey;
+}
+
+#cate {
+    padding-right: 20px;
+}
+
+.news {
+    float: right;
+    margin-left: 83%;
+    position: fixed;
+    bottom: 85px;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+}
+
+/***************footer的样式****************/
+
+footer {
+    float: left;
+    position:relative;
+    bottom: 1px;
+    margin-top: 70px;
+    width: 100%;
+    height: 100px; /* footer的高度一定要是固定值*/
+    background: #333;
+}
+
+.footer .footer-1 {
+    width: 100%;
+    height: 70px;
+    background: #555e68;
+}
+
+.footer .footer-2 {
+    width: 100%;
+    height: 30px;
+    background: #383e44;
+}
+
+/***************footer的样式****************/

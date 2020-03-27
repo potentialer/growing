@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="201801191" content="RHT">
+    <title>Title</title>
+</head>
+<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<style type="text/css">
+    #box2 {
+        margin-left: -425px;
+        float: left;
+        margin-top: 156px;
+        width: 360px;
+        margin-right: 29px;
+        height: 480px;
+        background: #3b4249;
+    }
+
+    #box2 > img {
+        width: 100%;
+        height: 100%;
+    }
+
+    #myTable {
+        width: 300px;
+        float: left;
+        margin-left: 131px;
+        margin-top: 50px;
+        text-align: center;
+
+    }
+
+    #myTable > th {
+        width: 50px;
+    }
+
+    #myTable {
+        width: 484px;
+        table-layout: fixed;
+        border: 1px;
+        overflow: hidden;
+    }
+
+</style>
+<body>
+
+<div class="file-box" id="box">
+    拍照上传
+    <input type="file" accept="image/*" id="file_input" class="file-btn">
+    <button type="button" id="sub" onclick="f()">提交</button>
+</div>
+<table id="myTable" cellpadding="1" cellspacing="0" border="1">
+    <caption align="top" style="margin-bottom: 15px">人脸识别结果</caption>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>性别</th>
+        <th>年龄</th>
+        <th>情绪</th>
+        {#type 笑不笑#}
+        <th>戴口罩了吗</th>
+    </tr>
+    </thead>
+    <tbody id="tbMain">
+    <tr>
+        <td id="t1" style="overflow:hidden;"></td>
+        <td id="t2"></td>
+        <td id="t3"></td>
+        <td id="t4"></td>
+        <td id="t5"></td>
+    </tr>
+    </tbody>
+</table>
+<div id="box2">
+    <img src="" id="showimg">
+</div>
+<script>
+    var imginput = document.getElementById("file_input");
+    var data = '';
+
+
+    document.getElementById("box").onclick = function () {
+        imginput.onchange = function () {
+            var file = this.files[0];
+            if (window.FileReader) {                                                        //如果浏览器支持FileReader
+                var reader = new FileReader();                                         //新建一个FileReader对象
+                reader.readAsDataURL(file);                                            //读取文件url
+                reader.onloadend = function (e) {
+                    console.log(e);//输出e,查看其参数
+                    console.log(e.target.result);//通过e,输出图片的base64码
+                    data = e.target.result;
+                    $("#showimg").attr("src", e.target.result);//将base64码填入src,用于预览
+                }
+            }
+
+        }
+
+    };
+    $.ajaxSetup({
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}'}
+    });
+
+    function f() {
+        $.ajax({
+            url: "/videos/face/",
+            type: 'post',
+            data: {'image': data},
+            success: function (result) {
+                var data = JSON.parse(result);
+                if (data.id) {
+                    document.getElementById("t1").innerHTML = data.id;
+                    document.getElementById("t2").innerHTML = data.gender;
+                    document.getElementById("t3").innerHTML = data.age;
+                    document.getElementById("t4").innerHTML = data.emotion;
+                    document.getElementById("t5").innerHTML = data.mask;
+                }
+                else {
+                    alert(data.error_msg);
+                }
+            }
+        })
+    }
+
+
+</script>
+</body>
+</html>
+
+
+
+
+

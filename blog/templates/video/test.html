@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="201801191" content="RHT">
+    <title>Title</title>
+</head>
+<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<style type="text/css">
+    #box2 {
+        float: left;
+        margin-top: 200px;
+        width: 360px;
+        height: 480px;
+        background: #3b4249;
+    }
+
+    #box2 > img {
+        width: 100%;
+        height: 100%;
+    }
+
+</style>
+<body>
+
+<div class="file-box" id="box">
+    拍照上传
+    <input type="file" accept="image/*" capture="camera" id="file_input" class="file-btn">
+    <button type="button" id="sub">提交</button>
+</div>
+<div id="box2">
+    <img src="" id="showimg">
+</div>
+<script>
+    var showimg = document.getElementById("showimg");
+    var imginput = document.getElementById("file_input");
+    var img_fiile = new ();
+    document.getElementById("box").onclick = function () {
+        imginput.onchange = function () {
+            var files = this.files;
+            console.log(files);   //本地的临时路径
+            var url = URL.createObjectURL(files[0]);
+            showimg.src = url;
+        }
+    };
+    $("#addimg").change(function () {                                            //file点击事件
+        var file = this.files[0];                                                             //获取文件
+        if (window.FileReader) {                                                        //如果浏览器支持FileReader
+            var reader = new FileReader();                                         //新建一个FileReader对象
+            reader.readAsDataURL(file);                                            //读取文件url
+            reader.onloadend = function (e) {
+                console.log(e);                                                             //输出e,查看其参数
+                console.log(e.target.result);                                        //通过e,输出图片的base64码
+                $("#DocumentScreenimg").attr("src", e.target.result);//将base64码填入src,用于预览
+            };
+        }
+        file = null;
+    });
+    $.ajaxSetup({
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}'}
+    });
+
+    document.getElementById('sub').addEventListener('click', function () {
+        let data = canvas.toDataURL();
+        console.log(data);
+
+        $.ajax({
+            url: "/videos/face/",
+            type: 'post',
+            data: {'image': data},
+            success: function (result) {
+                var data = JSON.parse(result);
+                if (data.id) {
+                    document.getElementById("t1").innerHTML = data.id;
+                    document.getElementById("t2").innerHTML = data.gender;
+                    document.getElementById("t3").innerHTML = data.age;
+                    document.getElementById("t4").innerHTML = data.emotion;
+                    document.getElementById("t5").innerHTML = data.mask;
+                }
+                else {
+                    alert(data.error_msg);
+                }
+            }
+        })
+    });
+
+</script>
+</body>
+</html>
+
+
+
+
+

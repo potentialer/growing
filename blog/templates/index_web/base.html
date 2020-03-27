@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My blog</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'index/content.css' %}">
+    {% block css %}
+        <link rel="stylesheet" type="text/css" href="#">
+    {% endblock %}
+    {% block js %}
+        <scrip></scrip>
+    {% endblock %}
+</head>
+<body>
+<div class="header">
+    <div class="blog_logo">
+        <h1><a href="{% url 'blog:index' %}" style="color: #FFFFFF">Blog</a></h1>
+    </div>
+    <div class="nav">
+        <ul class="menu">
+            {% block menu %}
+                <li class="active"><a href="{% url 'blog:index' %}">首页</a></li>
+                <li><a href="{% url 'blog:tech' '技术' %}">技术分享</a></li>
+                <li><a href="{% url 'blog:book' '美文' %}">美文欣赏</a></li>
+                <li>
+                    <div id="menu1">
+                        <ul>
+                            <li><a href="{% url 'videos:index' %}">人脸识别</a></li>
+                            <li>图像识别</li>
+                        </ul>
+                    </div>
+                </li>
+{#                <a href="{% url 'videos:index' %}">小应用</a>#}
+            {% endblock %}
+        </ul>
+    </div>
+</div>
+
+
+{% block main %}
+    <div></div>
+{% endblock %}
+{% block new %}
+<div class="news">
+    <a href="{% url 'blog:edit' 99999999 %}">
+        <img src="{% static 'index/add.png' %}" alt="新增文章" style="width: 55px;height: 55px">
+    </a>
+</div>
+{% endblock %}
+
+</body>
+</html>

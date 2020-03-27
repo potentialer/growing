@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+{% extends 'index_web/base.html' %}
+{% block title %}摄像头拍照{% endblock %}
+{% block js %}
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+{% endblock %}
+{% block css %}
+    <style type="text/css">
+        #face_box {
+            float: left;
+            margin-top: 35px;
+            text-align: center;
+            width: 83%;
+        }
+
+        #video {
+            float: left;
+            margin-top: 35px;
+            width: 600px;
+            height: 400px;
+        }
+
+        .cam {
+            float: left;
+            margin-top: 25px;
+            margin-left: 20px;
+            width: 480px;
+        }
+
+        #canvas {
+            float: left;
+            margin-top: 35px;
+            margin-left: 20px;
+            border: 0.1px solid black;
+        }
+
+        #myTable {
+            width: 300px;
+            float: left;
+            margin-left: 35px;
+            text-align: center;
+
+        }
+
+        #myTable > th {
+            width: 50px;
+        }
+
+        #myTable {
+            width: 484px;
+            table-layout: fixed;
+            border: 1px;
+            overflow: hidden;
+        }
+
+        #capture {
+            width: 100px;
+            height: 25px;
+        }
+
+        #sub {
+            margin-left: 35px;
+            width: 100px;
+            height: 25px;
+        }
+        .black_overlay {
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 1001;
+            -moz-opacity: 0.8;
+            opacity: .80;
+            filter: alpha(opacity=80);
+        }
+
+        .white_content {
+            display: none;
+            position: absolute;
+			top: 28%;
+			left: 30%;
+			width: 40%;
+			height: 30%;
+			border: 16px solid lightblue;
+			background-color: white;
+			z-index: 1002;
+			overflow: auto;
+        }
+
+    </style>
+{% endblock %}
+{% block menu %}
+    <li><a href="{% url 'blog:index' %}">首页</a></li>
+    <li><a href="{% url 'blog:tech' '技术' %}">技术分享</a></li>
+    <li><a href="{% url 'blog:book' '美文' %}">美文欣赏</a></li>
+    <li class="active">
+        <div id="menu1">
+            <ul>
+                <li><a href="{% url 'videos:index' %}">人脸识别</a></li>
+                <li>图像识别</li>
+            </ul>
+        </div>
+    </li>
+    {#                <a href="{% url 'videos:index' %}">小应用</a>#}
+{% endblock %}
+{% block main %}
+    <div id="face_box">
+        <video id="video" controls></video>
+        <canvas id="canvas" width="480" height="320"></canvas>
+        <div class="cam">
+            <button id="capture">拍照</button>
+            <button id="sub">提交</button>
+            <br>
+        </div>
+        <div id="fade" class="black_overlay">
+        </div>
+        <div id="MyDiv" class="white_content">
+            <div style="text-align: right; cursor: default; height: 40px;">
+                <span style="font-size: 16px;" onclick="CloseDiv('MyDiv','fade')">关闭</span>
+            </div>
+            <table id="myTable" cellpadding="1" cellspacing="0" border="1">
+                <caption align="top" style="margin-bottom: 15px">人脸识别结果</caption>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>性别</th>
+                    <th>年龄</th>
+                    <th>情绪</th>
+                    <th>戴口罩了吗</th>
+                </tr>
+                </thead>
+                <tbody id="tbMain">
+                <tr>
+                    <td id="t1" style="overflow:hidden;"></td>
+                    <td id="t2"></td>
+                    <td id="t3"></td>
+                    <td id="t4"></td>
+                    <td id="t5"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% block new %}
+    {% endblock %}
+    <script>
+
+        //访问用户媒体设备的兼容方法
+        function getUserMedia(constrains, success, error) {
+            if (navigator.mediaDevices.getUserMedia) {
+                //最新标准API
+                navigator.mediaDevices.getUserMedia(constrains).then(success).catch(error);
+            } else if (navigator.webkitGetUserMedia) {
+                //webkit内核浏览器
+                navigator.webkitGetUserMedia(constrains).then(success).catch(error);
+            } else if (navigator.mozGetUserMedia) {
+                //Firefox浏览器
+                navagator.mozGetUserMedia(constrains).then(success).catch(error);
+            } else if (navigator.getUserMedia) {
+                //旧版API
+                navigator.getUserMedia(constrains).then(success).catch(error);
+            }
+        }
+
+        var video = document.getElementById("video");
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+
+        //成功的回调函数
+        function success(stream) {
+            //兼容webkit内核浏览器
+            var CompatibleURL = window.URL || window.webkitURL;
+            //将视频流设置为video元素的源
+            video.srcObject = stream;
+            {#video.src = CompatibleURL.createObjectURL(stream);   // 此处的代码将会报错  解决的办法是将video的srcObject属性指向stream即可#}
+
+            //播放视频
+            video.play();
+        }
+
+        //异常的回调函数
+        function error(error) {
+            console.log("访问用户媒体设备失败：", error.name, error.message);
+        }
+
+        if (navigator.mediaDevices.getUserMedia || navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia) {
+            //调用用户媒体设备，访问摄像头
+            getUserMedia({video: {width: 480, height: 320}}, success, error);
+        } else {
+            alert("你的浏览器不支持访问用户媒体设备");
+        }
+
+        //注册拍照按钮的单击事件
+        document.getElementById("capture").addEventListener("click", function () {
+            //绘制画面
+            context.drawImage(video, 0, 0, 480, 320);
+        });
+
+        //弹出隐藏层
+        function ShowDiv(show_div, bg_div) {
+            document.getElementById(show_div).style.display = 'block';
+            document.getElementById(bg_div).style.display = 'block';
+            var bgdiv = document.getElementById(bg_div);
+            bgdiv.style.width = document.body.scrollWidth;
+// bgdiv.style.height = $(document).height();
+            $("#" + bg_div).height($(document).height());
+        }
+
+        //关闭弹出层
+        function CloseDiv(show_div, bg_div) {
+            document.getElementById(show_div).style.display = 'none';
+            document.getElementById(bg_div).style.display = 'none';
+        }
+
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}'}
+        });
+
+        document.getElementById('sub').addEventListener('click', function () {
+            let data = canvas.toDataURL();
+            console.log(data);
+
+            $.ajax({
+                url: "/videos/face/",
+                type: 'post',
+                data: {'image': data},
+                success: function (result) {
+                    var data = JSON.parse(result);
+                    document.getElementById("t1").innerHTML = data.id;
+                    document.getElementById("t2").innerHTML = data.gender;
+                    document.getElementById("t3").innerHTML = data.age;
+                    document.getElementById("t4").innerHTML = data.emotion;
+                    document.getElementById("t5").innerHTML = data.mask;
+                }
+            });
+            ShowDiv('MyDiv','fade')
+        });
+
+
+    </script>
+{% endblock %}

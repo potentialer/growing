@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="201801191" content="RHT">
+    <title>Title</title>
+</head>
+<body>
+<video
+        id="webcam"
+        :style="videoStyle"
+        :width="videoWidth"
+        :height="videoHeight"
+        loop
+        preload
+>
+</video>
+<script>
+     initVideo(){
+      let that = this;
+      this.video = document.getElementById("webcam");
+      setTimeout(() => {
+        if (
+          navigator.mediaDevices.getUserMedia ||
+          navigator.getUserMedia ||
+          navigator.webkitGetUserMedia ||
+          navigator.mozGetUserMedia
+        ) {
+          //调用用户媒体设备, 访问摄像头
+          this.getUserMedia(
+            {
+              video: {
+                width: {
+                  ideal: that.videoWidth,
+                  max: that.videoWidth
+                },
+                height: {
+                  ideal: that.videoHeight,
+                  max: that.videoHeight
+                },
+                facingMode: "user",    //前置摄像头
+                frameRate: {
+                  ideal: 30,
+                  min: 10
+                }
+              }
+            },
+            this.videoSuccess,
+            this.videoError
+          );
+        } else {
+          this.$toast.center("摄像头打开失败,请检查权限设置!");
+        }
+      }, 300);
+    },
+     getUserMedia(constraints, success, error) {
+      if (navigator.mediaDevices.getUserMedia) {
+        //最新的标准API
+        navigator.mediaDevices
+          .getUserMedia(constraints)
+          .then(success)
+          .catch(error);
+      } else if (navigator.webkitGetUserMedia) {
+        //webkit核心浏览器
+        navigator.webkitGetUserMedia(constraints, success, error);
+      } else if (navigator.mozGetUserMedia) {
+        //firfox浏览器
+        navigator.mozGetUserMedia(constraints, success, error);
+      } else if (navigator.getUserMedia) {
+        //旧版API
+        navigator.getUserMedia(constraints, success, error);
+      }
+    },
+    videoSuccess(stream) {
+      this.mediaStreamTrack = stream;
+      this.video.srcObject = stream;
+      this.video.play();
+    },
+    videoError(error) {
+      console.error(error);
+      this.$toast.center("摄像头打开失败,请检查权限设置!");
+    },
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% extends 'index_web/base.html' %}
+{% block title %}美文欣赏{% endblock %}
+{% block menu %}
+    <li><a href="{% url 'blog:index' %}">首页</a></li>
+    <li><a href="{% url 'blog:tech' '技术' %}">技术分享</a></li>
+    <li class="active"><a href="{% url 'blog:book' '美文' %}">美文欣赏</a></li>
+{% endblock %}
+{% block main %}
+    <div class="center_text">
+        <div class="cent">
+            <ul class="_all_blog">
+                {% for blog_contente in article %}
+                    <li class="_blog">
+                        <p><a class="title"
+                              href="{% url 'blog:article_page' blog_contente.id %}">{{ blog_contente.title }}</a></p>
+                        <div class="content">
+                            <span>{{ blog_contente.content|safe }}</span>
+                        </div>
+                        <div class="info">
+                            <span id="cate">{{ blog_contente.category }} |</span>
+                            <span>阅读量：({{ blog_contente.views }})</span>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="footer-1">
+
+        </div>
+        <div class="footer-2">
+        </div>
+    </footer>
+{% endblock %}
